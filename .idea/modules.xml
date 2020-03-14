@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/rbac_shiro/rbac_shiro.iml" filepath="$PROJECT_DIR$/rbac_shiro/rbac_shiro.iml" />
       <module fileurl="file://$PROJECT_DIR$/xdclass_shiro/xdclass_shiro.iml" filepath="$PROJECT_DIR$/xdclass_shiro/xdclass_shiro.iml" />
     </modules>
   </component>
