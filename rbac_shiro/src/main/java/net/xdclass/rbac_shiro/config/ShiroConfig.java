@@ -9,6 +9,7 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisManager;
+import org.crazycake.shiro.RedisSessionDAO;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -115,7 +116,12 @@ public class ShiroConfig {
     public SessionManager sessionManager() {
         CustomSessionManager customSessionManager = new CustomSessionManager();
         // 超时时间，默认30分钟，回话超时，单位ms
-        customSessionManager.setGlobalSessionTimeout(200000);
+//        customSessionManager.setGlobalSessionTimeout(200000);
+
+        /**
+         * 配置session持久化,会报错，不知道为什么
+         */
+//        customSessionManager.setSessionDAO(redisSessionDAO());
         return customSessionManager;
     }
 
@@ -133,8 +139,25 @@ public class ShiroConfig {
     public RedisCacheManager cacheManager() {
         RedisCacheManager redisCacheManager = new RedisCacheManager();
         redisCacheManager.setRedisManager(getRedisManager());
+
+        // 设置过期时间，单位是秒
+        redisCacheManager.setExpire(20);
         return redisCacheManager;
     }
+
+    /**
+     * 自定义session持久化
+     * @return
+     */
+    public RedisSessionDAO redisSessionDAO() {
+        RedisSessionDAO rsD = new RedisSessionDAO();
+        rsD.setRedisManager(getRedisManager());
+
+        // 设置sessionid生成器
+        rsD.setSessionIdGenerator(new CustomSessionIdGenerator());
+        return rsD;
+    }
+
 
 
 }

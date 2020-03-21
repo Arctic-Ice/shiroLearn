@@ -33,8 +33,11 @@ public class CustomRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         System.out.println("----授权 doGetAuthorizationInfo----");
-        String username = (String) principals.getPrimaryPrincipal();
-        User user = userService.findAllUserInfoByUsername(username);
+//        String username = (String) principals.getPrimaryPrincipal();
+//        User user = userService.findAllUserInfoByUsername(username);
+
+        User newUser = (User) principals.getPrimaryPrincipal();
+        User user = userService.findAllUserInfoByUsername(newUser.getUsername());
 
         List<String> stringRoleList = new ArrayList<>();
         List<String> stringPermissionList = new ArrayList<>();
@@ -72,6 +75,10 @@ public class CustomRealm extends AuthorizingRealm {
         if (pwd == null || "".equals(pwd)) {
             return null;
         }
-        return new SimpleAuthenticationInfo(username, user.getPassword(), this.getClass().getName());
+
+        // 不适用redis
+//        return new SimpleAuthenticationInfo(username, user.getPassword(), this.getClass().getName());
+        // 使用redis
+        return new SimpleAuthenticationInfo(user, user.getPassword(), this.getClass().getName());
     }
 }
