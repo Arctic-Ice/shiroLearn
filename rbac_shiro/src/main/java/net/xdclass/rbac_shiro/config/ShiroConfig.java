@@ -7,6 +7,8 @@ import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -75,11 +77,18 @@ public class ShiroConfig {
         //如果不是前后端分离，则不必设置下面的sessionManager
         securityManager.setSessionManager(sessionManager());
 
+        // 使用自定义的cache
+        securityManager.setCacheManager(cacheManager());
+
         // 设置realm（推荐放到最后，不如某些情况会不生效）
         securityManager.setRealm(customRealm());
         return securityManager;
     }
 
+    /**
+     * 自定义realm
+     * @return
+     */
     @Bean
     public CustomRealm customRealm() {
         CustomRealm customRealm = new CustomRealm();
@@ -101,10 +110,31 @@ public class ShiroConfig {
 
     }
 
+    // 自定义sessionManager
+    @Bean
     public SessionManager sessionManager() {
         CustomSessionManager customSessionManager = new CustomSessionManager();
         // 超时时间，默认30分钟，回话超时，单位ms
         customSessionManager.setGlobalSessionTimeout(200000);
         return customSessionManager;
     }
+
+    /**
+     * 配置redisManager
+     * @return
+     */
+    public RedisManager getRedisManager() {
+        RedisManager redisManager = new RedisManager();
+        redisManager.setHost("192.168.10.127");
+        redisManager.setPort(6379);
+        return redisManager;
+    }
+
+    public RedisCacheManager cacheManager() {
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        redisCacheManager.setRedisManager(getRedisManager());
+        return redisCacheManager;
+    }
+
+
 }
